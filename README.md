@@ -1,5 +1,5 @@
 # esn-i18n
-This module is forked from https://github.com/mashpie/i18n-node
+> This module is forked from https://github.com/mashpie/i18n-node
 
 Lightweight simple translation module with dynamic json storage. Supports plain vanilla node.js apps and should work with any framework (like _express_, _restify_ and probably more) that exposes an `app.use()` method passing in `res` and `req` objects.
 Uses common __('...') syntax in app and templates.
@@ -16,7 +16,7 @@ No extra parsing needed.
 
 ## Install
 ```sh
-npm install esn-i18n --save
+npm install @linagora/i18n-node --save
 ```
 
 ## Test
