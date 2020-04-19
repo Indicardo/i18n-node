@@ -1,5 +1,6 @@
 /*
  * Extracted from https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/i18n
+ * Added multi-directory typings
  */
 
 // Type definitions for i18n-node 0.8
@@ -16,6 +17,12 @@ declare namespace i18n {
      * @default []
      */
     locales?: string[];
+
+    /**
+     * Setup some locales - other locales default to en silently
+     * @default []
+     */
+    multiDirectories?: boolean;
 
     /**
      * Language fallback map
@@ -48,6 +55,11 @@ declare namespace i18n {
      * @default "./locales"
      */
     directory?: string;
+
+    /**
+     * Alias of the directory
+     */
+    dirName?: string;
 
     /**
      * Control mode on directory creation. Setting has no effect on win.
