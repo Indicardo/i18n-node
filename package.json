@@ -1,7 +1,7 @@
 {
   "name": "@indicado/i18n",
   "description": "lightweight translation module with dynamic json storage",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "homepage": "https://github.com/indicardo/i18n-node",
   "repository": {
     "type": "git",
