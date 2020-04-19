@@ -1,11 +1,11 @@
 {
-  "name": "@linagora/i18n-node",
+  "name": "@indicado/i18n",
   "description": "lightweight translation module with dynamic json storage",
   "version": "0.9.1",
-  "homepage": "http://github.com/mashpie/i18n-node",
+  "homepage": "https://github.com/indicardo/i18n-node",
   "repository": {
     "type": "git",
-    "url": "https://github.com/linagora/i18n-node"
+    "url": "https://github.com/indicardo/i18n-node"
   },
   "author": "Marcus Spiegel <marcus.spiegel@gmail.com>",
   "main": "./index",
