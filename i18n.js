@@ -1,15 +1,14 @@
 /**
- * @author      Created by Marcus Spiegel <marcus.spiegel@gmail.com> on 2011-03-25.
+ * @author      Created by Marcus Spiegel <spiegel@uscreen.de> on 2011-03-25.
  * @link        https://github.com/mashpie/i18n-node
  * @license     http://opensource.org/licenses/MIT
- *
- * @version     0.8.3
  */
 
 'use strict';
 
 // dependencies
 var vsprintf = require('sprintf-js').vsprintf,
+  pkgVersion = require('./package.json').version,
   fs = require('fs'),
   url = require('url'),
   path = require('path'),
@@ -18,11 +17,8 @@ var vsprintf = require('sprintf-js').vsprintf,
   error = require('debug')('i18n:error'),
   Mustache = require('mustache'),
   Messageformat = require('messageformat'),
-  MakePlural = require('make-plural/make-plural').load(
-    require('make-plural/data/plurals.json')
-  ),
-  parseInterval = require('math-interval-parser').default,
-  extend = require('extend');
+  MakePlural = require('make-plural'),
+  parseInterval = require('math-interval-parser').default;
 
 // exports an instance
 module.exports = (function() {
@@ -68,7 +64,7 @@ module.exports = (function() {
   // public exports
   var i18n = {};
 
-  i18n.version = '0.8.3';
+  i18n.version = pkgVersion;
 
   i18n.configure = function i18nConfigure(opt) {
 
@@ -300,6 +296,9 @@ module.exports = (function() {
       mf = MessageformatInstanceForLocale[targetLocale];
     } else {
       mf = new Messageformat(targetLocale);
+
+      // @see https://messageformat.github.io/messageformat/MessageFormat#disablePluralKeyChecks__anchor
+      mf.disablePluralKeyChecks();
       mf.compiledFunctions = {};
       MessageformatInstanceForLocale[targetLocale] = mf;
     }
@@ -359,7 +358,7 @@ module.exports = (function() {
       args.unshift(count);
 
       // some template engines pass all values as strings -> so we try to convert them to numbers
-      if (typeof plural === 'number' || parseInt(plural, 10) + '' === plural) {
+      if (typeof plural === 'number' || Number(plural) + '' === plural) {
         count = plural;
       }
 
@@ -370,7 +369,7 @@ module.exports = (function() {
       }
     } else {
       // called like  __n('cat', 3)
-      if (typeof plural === 'number' || parseInt(plural, 10) + '' === plural) {
+      if (typeof plural === 'number' || Number(plural) + '' === plural) {
         count = plural;
 
         // we add same string as default
@@ -390,7 +389,7 @@ module.exports = (function() {
     if (count === null) count = namedValues.count;
 
     // enforce number
-    count = parseInt(count, 10);
+    count = Number(count);
 
     // find the correct plural rule for given locale
     if (typeof msg === 'object') {
@@ -406,7 +405,7 @@ module.exports = (function() {
             return !!el;
           });
         // take the first part of locale, fallback to full locale
-        p = new MakePlural(lc[0] || targetLocale);
+        p = MakePlural[lc[0] || targetLocale];
         PluralsForLocale[targetLocale] = p;
       }
 
@@ -523,7 +522,7 @@ module.exports = (function() {
       locale === undefined &&
       typeof this.locale === 'string'
     ) {
-      if (register && register.GLOBAL) {
+      if (register && register.global) {
         targetLocale = '';
       } else {
         targetLocale = this.locale;
@@ -572,7 +571,7 @@ module.exports = (function() {
 
     // replace the counter
     if (typeof count === 'number') {
-      msg = vsprintf(msg, [parseInt(count, 10)]);
+      msg = vsprintf(msg, [Number(count)]);
     }
 
     // if the msg string contains {{Mustache}} patterns we render it as a mini tempalate
@@ -677,6 +676,7 @@ module.exports = (function() {
     var extensionRegex = new RegExp(extension + '$', 'g');
     var prefixRegex = new RegExp('^' + prefix, 'g');
 
+    if (!filename) return false;
     if (prefix && !filename.match(prefixRegex)) return false;
     if (extension && !filename.match(extensionRegex)) return false;
     return filename.replace(prefix, '').replace(extensionRegex, '');
@@ -696,7 +696,8 @@ module.exports = (function() {
 
       // a query parameter overwrites all
       if (queryParameter && request.url) {
-        var urlObj = url.parse(request.url, true);
+        var urlAsString = typeof request.url === 'string' ? request.url : request.url.toString();
+        var urlObj = url.parse(urlAsString, true);
         if (urlObj.query[queryParameter]) {
           logDebug('Overriding locale from query: ' + urlObj.query[queryParameter]);
           request.language = urlObj.query[queryParameter];
@@ -978,7 +979,7 @@ module.exports = (function() {
     var mutator = localeMutator(locale, singular);
 
     if (plural) {
-      if (!accessor()) {
+      if (accessor() == null) {
         mutator({
           'one': defaultSingular || singular,
           'other': defaultPlural || plural
@@ -987,7 +988,7 @@ module.exports = (function() {
       }
     }
 
-    if (!accessor()) {
+    if (accessor() == null) {
       mutator(defaultSingular || singular);
       write(locale);
     }

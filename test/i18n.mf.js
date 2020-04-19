@@ -38,6 +38,8 @@ describe('parsing Messageformat phrases', function() {
     should.equal('Hallo Marcus, wie war dein test?', mfTest.__mf('Hello {name}, how was your %s?', 'test', { name: 'Marcus' }));
   });
 
+
+
   it('should work with plurals', function() {
     var msg = 'In {lang} there {NUM, plural,';
     msg += 'zero{are zero for #}';
@@ -46,7 +48,7 @@ describe('parsing Messageformat phrases', function() {
     msg += 'few{are a few for #}';
     msg += 'many{are many for #}';
     msg += 'other{others for #}}';
-
+    
     mfTest.setLocale('en');
     should.equal('In english there others for 0', mfTest.__mf(msg, { NUM: 0, lang: 'english' }));
     should.equal('In english there is one for 1', mfTest.__mf(msg, { NUM: 1, lang: 'english' }));
