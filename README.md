@@ -1,4 +1,4 @@
-# esn-i18n
+# @indicado/i18n
 > This module is forked from https://github.com/mashpie/i18n-node
 
 Lightweight simple translation module with dynamic json storage. Supports plain vanilla node.js apps and should work with any framework (like _express_, _restify_ and probably more) that exposes an `app.use()` method passing in `res` and `req` objects.
@@ -7,7 +7,7 @@ Stores language files in json files compatible to [webtranslateit](http://webtra
 Adds new strings on-the-fly when first used in your app.
 No extra parsing needed.
 
-[![Travis][travis-image]][travis-url] 
+[![Travis][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 [![NPM version][npm-image]][npm-url]
 ![npm](https://img.shields.io/npm/dw/i18n)
@@ -17,7 +17,7 @@ No extra parsing needed.
 
 ## Install
 ```sh
-npm install @linagora/i18n-node --save
+npm install @indicado/i18n --save
 ```
 
 ## Test
@@ -29,7 +29,7 @@ npm test
 ```js
 // load modules
 var express = require('express'),
-    i18n = require('@linagora/i18n-node');
+    i18n = require('@indicado/i18n-node');
 ```
 
 ## Configure
