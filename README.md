@@ -1,8 +1,9 @@
 # @indicado/i18n
+
 > This module is forked from https://github.com/mashpie/i18n-node
 
 Lightweight simple translation module with dynamic json storage. Supports plain vanilla node.js apps and should work with any framework (like _express_, _restify_ and probably more) that exposes an `app.use()` method passing in `res` and `req` objects.
-Uses common __('...') syntax in app and templates.
+Uses common \_\_('...') syntax in app and templates.
 Stores language files in json files compatible to [webtranslateit](http://webtranslateit.com/) json format.
 Adds new strings on-the-fly when first used in your app.
 No extra parsing needed.
@@ -16,20 +17,23 @@ No extra parsing needed.
 [![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
 
 ## Install
+
 ```sh
 npm install @indicado/i18n --save
 ```
 
 ## Test
+
 ```sh
 npm test
 ```
 
 ## Load
+
 ```js
 // load modules
-var express = require('express'),
-    i18n = require('@indicado/i18n-node');
+var express = require("express"),
+  i18n = require("@indicado/i18n-node");
 ```
 
 ## Configure
@@ -38,10 +42,11 @@ Minimal example, just setup two locales and a project specific directory
 
 ```js
 i18n.configure({
-    locales: ['en', 'de'],
-    directory: __dirname + '/locales'
+  locales: ["en", "de"],
+  directory: __dirname + "/locales",
 });
 ```
+
 now you are ready to use a global `i18n.__('Hello')`.
 
 ## Example usage in global scope
@@ -49,11 +54,10 @@ now you are ready to use a global `i18n.__('Hello')`.
 In your cli, when not registered to a specific object:
 
 ```js
-var greeting = i18n.__('Hello');
+var greeting = i18n.__("Hello");
 ```
 
-
-> **Global** assumes you share a common state of localization in any time and any part of your app. This is usually fine in cli-style scripts. When serving responses to http requests you'll need to make sure that scope is __NOT__ shared globally but attached to your request object.
+> **Global** assumes you share a common state of localization in any time and any part of your app. This is usually fine in cli-style scripts. When serving responses to http requests you'll need to make sure that scope is **NOT** shared globally but attached to your request object.
 
 ## Example usage in express.js
 
@@ -75,11 +79,10 @@ app.configure(function() {
 in your apps methods:
 
 ```js
-app.get('/de', function(req, res) {
-  var greeting = res.__('Hello');
+app.get("/de", function (req, res) {
+  var greeting = res.__("Hello");
 });
 ```
-
 
 in your templates (depending on your template engine):
 
@@ -95,46 +98,60 @@ See [tested examples](https://github.com/mashpie/i18n-node/tree/master/examples)
 
 > PLEASE NOTE: Those gist examples worked until node 0.12.x only
 
-* [plain node.js + http](https://gist.github.com/mashpie/5188567)
-* [plain node.js + restify](https://gist.github.com/mashpie/5694251)
-* [express 3 + cookie](https://gist.github.com/mashpie/5124626)
-* [express 3 + hbs 2 (+ cookie)](https://gist.github.com/mashpie/5246334)
-* [express 3 + mustache (+ cookie)](https://gist.github.com/mashpie/5247373)
-* [express 4 + cookie](https://gist.github.com/mashpie/08e5a0ee764f7b6b1355)
+- [plain node.js + http](https://gist.github.com/mashpie/5188567)
+- [plain node.js + restify](https://gist.github.com/mashpie/5694251)
+- [express 3 + cookie](https://gist.github.com/mashpie/5124626)
+- [express 3 + hbs 2 (+ cookie)](https://gist.github.com/mashpie/5246334)
+- [express 3 + mustache (+ cookie)](https://gist.github.com/mashpie/5247373)
+- [express 4 + cookie](https://gist.github.com/mashpie/08e5a0ee764f7b6b1355)
 
 For serving the same static files with different language url, you could:
 
 ```js
-app.use(express.static(__dirname + '/www'));
-app.use('/en', express.static(__dirname + '/www'));
-app.use('/de', express.static(__dirname + '/www'));
+app.use(express.static(__dirname + "/www"));
+app.use("/en", express.static(__dirname + "/www"));
+app.use("/de", express.static(__dirname + "/www"));
 ```
 
 ## Multiple directories support
 
-`i18n-node` supports multiple directories usage. This option lets you register different directories to provide translations. Just add `multiDirectories : true` in your configuration, then call `configure()` method to provide new `directory` and `dirName` (_alias_ of `directory`). Finally, call translation methods with _alias_ of directory as last argument.
+`@indicado/i18n` supports using locales that are spread among multiple directories. This option lets you register different directories to provide translations. Just add `multiDirectories : true` in your configuration, then call the `configure()` method each time you want to provide a new `directory` (which we will be calling `namespace`, for the sake of simplicity) and `dirName` (which is an _alias_ of `directory`). Finally, call translation methods with the aforementioned directory _alias_ as last argument.
 Please note that, in case you do not use the `updateFiles` you may ignore _alias_ of directory and just call translation methods as usual.
 
 ### Example
 
-Configure i18n as usual. Add `multiDirectories` as `true`, specify new directory path and an _alias_ (if need).
+Configure i18n as usual and add `multiDirectories` as `true`.
 
 ```js
 i18n.configure({
-  locales: ['en', 'de'],
+  locales: ["en", "de"],
   multiDirectories: true,
-  directory: __dirname + '/locales',
-  dirName: 'newDirectory' // alias of directory
+  directory: __dirname + "/locales",
 });
 ```
 
-Then translate anything as usual if translation come from default directory, or just pass the _alias_ of `directory` if translation come from another directory:
+Once that is done, call the configure method again for each `namespace` or `directory` you want to add:
 
 ```js
-  __('sentence to translate');
-    //Same as __('sentence to translate', 'default');
+i18n.configure({
+  directory: __dirname + "/locales/whatever",
+  dirName: "namespace1",
+});
 
-  __('sentence to translate', 'newDirectory');
+i18n.configure({
+  directory: __dirname + "/locales/anotherfolder",
+  dirName: "namespace2",
+});
+```
+
+Then translate anything as usual if your translation is within the default directory, or just pass an alias if your translation is within another directory:
+
+```js
+__("sentence to translate");
+//Same as __('sentence to translate', 'default');
+
+__("sentence to translate", "namespace1");
+// Will get '/locales/whatever/locale.json' in this case
 ```
 
 ### Details
@@ -151,12 +168,12 @@ The api is subject of incremental development. That means, it should not change 
 
 ### i18n.configure()
 
-You should configure your application once to bootstrap all aspects of `i18n`. You should not configure `i18n` in each loop when used in an http based scenario. During configuration, `i18n` reads all known locales into memory and prepares to keep that superfast object in sync with your files in file system  as configured.
+You should configure your application once to bootstrap all aspects of `i18n`. You should not configure `i18n` in each loop when used in an http based scenario. During configuration, `i18n` reads all known locales into memory and prepares to keep that superfast object in sync with your files in file system as configured.
 
 ```js
 i18n.configure({
-    locales: ['en', 'de'],
-    directory: __dirname + '/locales'
+  locales: ["en", "de"],
+  directory: __dirname + "/locales",
 });
 ```
 
@@ -164,91 +181,92 @@ i18n.configure({
 
 ```js
 i18n.configure({
-    directory: __dirname + '/locales'
+  directory: __dirname + "/locales",
 });
 ```
 
 #### list of all configuration options
+
 ```js
 i18n.configure({
-    // setup some locales - other locales default to en silently
-    locales: ['en', 'de'],
+  // setup some locales - other locales default to en silently
+  locales: ["en", "de"],
 
-    // fall back from Dutch to German
-    // use wildcards to cover every local variation for a given language
-    fallbacks:{'nl': 'de', 'en-*': 'en'},
+  // fall back from Dutch to German
+  // use wildcards to cover every local variation for a given language
+  fallbacks: { nl: "de", "en-*": "en" },
 
-    // you may alter a site wide default locale
-    defaultLocale: 'de',
+  // you may alter a site wide default locale
+  defaultLocale: "de",
 
-    // sets a custom cookie name to parse locale settings from - defaults to NULL
-    cookie: 'yourcookiename',
+  // sets a custom cookie name to parse locale settings from - defaults to NULL
+  cookie: "yourcookiename",
 
-    // query parameter to switch locale (ie. /home?lang=ch) - defaults to NULL
-    queryParameter: 'lang',
+  // query parameter to switch locale (ie. /home?lang=ch) - defaults to NULL
+  queryParameter: "lang",
 
-    // where to store json files - defaults to './locales' relative to modules directory
-    directory: './mylocales',
+  // where to store json files - defaults to './locales' relative to modules directory
+  directory: "./mylocales",
 
-    // support multi directory
-    multiDirectories: true,
+  // support multi directory
+  multiDirectories: true,
 
-    // alias of directory
-    dirName: 'newDirectory',
+  // alias of directory
+  dirName: "newDirectory",
 
-    // controll mode on directory creation - defaults to NULL which defaults to umask of process user. Setting has no effect on win.
-    directoryPermissions: '755',
+  // controll mode on directory creation - defaults to NULL which defaults to umask of process user. Setting has no effect on win.
+  directoryPermissions: "755",
 
-    // watch for changes in json files to reload locale on updates - defaults to false
-    autoReload: true,
+  // watch for changes in json files to reload locale on updates - defaults to false
+  autoReload: true,
 
-    // whether to write new locale information to disk - defaults to true
-    updateFiles: false,
+  // whether to write new locale information to disk - defaults to true
+  updateFiles: false,
 
-    // sync locale information across all files - defaults to false
-    syncFiles: false,
+  // sync locale information across all files - defaults to false
+  syncFiles: false,
 
-    // what to use as the indentation unit - defaults to '\t'
-    indent: '\t',
+  // what to use as the indentation unit - defaults to '\t'
+  indent: "\t",
 
-    // setting extension of json files - defaults to '.json' (you might want to set this to '.js' according to webtranslateit)
-    extension: '.js',
+  // setting extension of json files - defaults to '.json' (you might want to set this to '.js' according to webtranslateit)
+  extension: ".js",
 
-    // setting prefix of json files name - default to none '' (in case you use different locale files naming scheme (webapp-en.json), rather then just en.json)
-    prefix: 'webapp-',
+  // setting prefix of json files name - default to none '' (in case you use different locale files naming scheme (webapp-en.json), rather then just en.json)
+  prefix: "webapp-",
 
-    // enable object notation
-    objectNotation: false,
+  // enable object notation
+  objectNotation: false,
 
-    // setting of log level DEBUG - default to require('debug')('i18n:debug')
-    logDebugFn: function (msg) {
-        console.log('debug', msg);
-    },
+  // setting of log level DEBUG - default to require('debug')('i18n:debug')
+  logDebugFn: function (msg) {
+    console.log("debug", msg);
+  },
 
-    // setting of log level WARN - default to require('debug')('i18n:warn')
-    logWarnFn: function (msg) {
-        console.log('warn', msg);
-    },
+  // setting of log level WARN - default to require('debug')('i18n:warn')
+  logWarnFn: function (msg) {
+    console.log("warn", msg);
+  },
 
-    // setting of log level ERROR - default to require('debug')('i18n:error')
-    logErrorFn: function (msg) {
-        console.log('error', msg);
-    },
+  // setting of log level ERROR - default to require('debug')('i18n:error')
+  logErrorFn: function (msg) {
+    console.log("error", msg);
+  },
 
-    // object or [obj1, obj2] to bind the i18n api and current locale to - defaults to null
-    register: global,
+  // object or [obj1, obj2] to bind the i18n api and current locale to - defaults to null
+  register: global,
 
-    // hash to specify different aliases for i18n's internal methods to apply on the request/response objects (method -> alias).
-    // note that this will *not* overwrite existing properties with the same name
-    api: {
-      '__': 't',  //now req.__ becomes req.t
-      '__n': 'tn' //and req.__n can be called as req.tn
-    },
+  // hash to specify different aliases for i18n's internal methods to apply on the request/response objects (method -> alias).
+  // note that this will *not* overwrite existing properties with the same name
+  api: {
+    __: "t", //now req.__ becomes req.t
+    __n: "tn", //and req.__n can be called as req.tn
+  },
 
-    // Downcase locale when passed on queryParam; e.g. lang=en-US becomes
-    // en-us.  When set to false, the queryParam value will be used as passed;
-    // e.g. lang=en-US remains en-US.
-    preserveLegacyCase: true
+  // Downcase locale when passed on queryParam; e.g. lang=en-US becomes
+  // en-us.  When set to false, the queryParam value will be used as passed;
+  // e.g. lang=en-US remains en-US.
+  preserveLegacyCase: true,
 });
 ```
 
@@ -257,7 +275,7 @@ The locale itself is gathered directly from the browser by header, cookie or que
 In case of cookie you will also need to enable cookies for your application. For express this done by adding `app.use(express.cookieParser())`). Now use the same cookie name when setting it in the user preferred language, like here:
 
 ```js
-res.cookie('yourcookiename', 'de', { maxAge: 900000, httpOnly: true });
+res.cookie("yourcookiename", "de", { maxAge: 900000, httpOnly: true });
 ```
 
 After this and until the cookie expires, `i18n.init()` will get the value of the cookie to set that language instead of default for every page.
@@ -270,24 +288,24 @@ Esp. when used in a cli like script you won't use any `i18n.init()` to guess lan
 var anyObject = {};
 
 i18n.configure({
-  locales: ['en', 'de'],
-  register: anyObject
+  locales: ["en", "de"],
+  register: anyObject,
 });
 
-anyObject.setLocale('de');
-anyObject.__('Hallo'); // --> Hallo`
+anyObject.setLocale("de");
+anyObject.__("Hallo"); // --> Hallo`
 ```
 
 Cli usage is a special use case, as we won't need to maintain any transaction / concurrency aware setting of locale, so you could even choose to bind `i18n` to _global_ scope of node:
 
 ```js
 i18n.configure({
-  locales: ['en', 'de'],
-  register: global
+  locales: ["en", "de"],
+  register: global,
 });
 
-i18n.setLocale('de');
-__('Hello'); // --> Hallo`
+i18n.setLocale("de");
+__("Hello"); // --> Hallo`
 ```
 
 ### i18n.init()
@@ -351,41 +369,41 @@ and add it's extra attributes and methods, like so:
 
 Now each _local_ object (ie. res.locals) is setup with _it's own "private"_ locale and methods to get the appropriate translation from the _global_ catalog.
 
-### i18n.__()
+### i18n.\_\_()
 
 Translates a single phrase and adds it to locales if unknown. Returns translated parsed and substituted string.
 
 ```js
 // template and global (this.locale == 'de')
-__('Hello'); // Hallo
-__('Hello %s', 'Marcus'); // Hallo Marcus
-__('Hello {{name}}', { name: 'Marcus' }); // Hallo Marcus
+__("Hello"); // Hallo
+__("Hello %s", "Marcus"); // Hallo Marcus
+__("Hello {{name}}", { name: "Marcus" }); // Hallo Marcus
 
 // scoped via req object (req.locale == 'de')
-req.__('Hello'); // Hallo
-req.__('Hello %s', 'Marcus'); // Hallo Marcus
-req.__('Hello {{name}}', { name: 'Marcus' }); // Hallo Marcus
+req.__("Hello"); // Hallo
+req.__("Hello %s", "Marcus"); // Hallo Marcus
+req.__("Hello {{name}}", { name: "Marcus" }); // Hallo Marcus
 
 // scoped via res object (res.locale == 'de')
-res.__('Hello'); // Hallo
-res.__('Hello %s', 'Marcus'); // Hallo Marcus
-res.__('Hello {{name}}', { name: 'Marcus' }); // Hallo Marcus
+res.__("Hello"); // Hallo
+res.__("Hello %s", "Marcus"); // Hallo Marcus
+res.__("Hello {{name}}", { name: "Marcus" }); // Hallo Marcus
 
 // passing specific locale
-__({phrase: 'Hello', locale: 'fr'}); // Salut
-__({phrase: 'Hello %s', locale: 'fr'}, 'Marcus'); // Salut Marcus
-__({phrase: 'Hello {{name}}', locale: 'fr'}, { name: 'Marcus' }); // Salut Marcus
+__({ phrase: "Hello", locale: "fr" }); // Salut
+__({ phrase: "Hello %s", locale: "fr" }, "Marcus"); // Salut Marcus
+__({ phrase: "Hello {{name}}", locale: "fr" }, { name: "Marcus" }); // Salut Marcus
 ```
 
-### i18n.__n()
+### i18n.\_\_n()
 
 Plurals translation of a single phrase. Singular and plural forms will get added to locales if unknown. Returns translated parsed and substituted string based on last `count` parameter.
 
 ```js
 // short syntax is best suited for reading
 // --> writes '%s cat' to both `one` and `other` plurals
-__n('%s cat', 1) // --> 1 Katze
-__n('%s cat', 3) // --> 3 Katzen
+__n("%s cat", 1); // --> 1 Katze
+__n("%s cat", 3); // --> 3 Katzen
 
 // long syntax works fine in combination with `updateFiles`
 // --> writes '%s cat' to `one` and '%s cats' to `other` plurals
@@ -402,18 +420,18 @@ res.__n("%s cat", 1); // 1 Katze
 res.__n("%s cat", 3); // 3 Katzen
 
 // passing specific locale
-__n({singular: "%s cat", plural: "%s cats", locale: "fr"}, 1); // 1 chat
-__n({singular: "%s cat", plural: "%s cats", locale: "fr"}, 3); // 3 chats
+__n({ singular: "%s cat", plural: "%s cats", locale: "fr" }, 1); // 1 chat
+__n({ singular: "%s cat", plural: "%s cats", locale: "fr" }, 3); // 3 chats
 
 // the all in one object signature
-__n({singular: "%s cat", plural: "%s cats", locale: "fr", count: 1}); // 1 chat
-__n({singular: "%s cat", plural: "%s cats", locale: "fr", count: 3}); // 3 chats
+__n({ singular: "%s cat", plural: "%s cats", locale: "fr", count: 1 }); // 1 chat
+__n({ singular: "%s cat", plural: "%s cats", locale: "fr", count: 3 }); // 3 chats
 ```
 
 When used in short form like `__n(phrase, count)` the following will get added to your json files:
 
 ```js
-__n('%s dog', 1)
+__n("%s dog", 1);
 ```
 
 ```json
@@ -428,7 +446,7 @@ __n('%s dog', 1)
 When used in long form like `__n(singular, plural, count)` you benefit form passing defaults to both forms:
 
 ```js
-__n('%s kitty', '%s kittens', 0)
+__n("%s kitty", "%s kittens", 0);
 ```
 
 ```json
@@ -448,7 +466,7 @@ You might now add extra forms to certain json files to support the complete set 
     "one": "%d кошка",
     "few": "%d кошки",
     "many": "%d кошек",
-    "other": "%d кошка",
+    "other": "%d кошка"
   }
 }
 ```
@@ -456,35 +474,37 @@ You might now add extra forms to certain json files to support the complete set 
 and let `__n()` select the correct form for you:
 
 ```js
-__n('%s cat', 0); // --> 0 кошек
-__n('%s cat', 1); // --> 1 кошка
-__n('%s cat', 2); // --> 2 кошки
-__n('%s cat', 5); // --> 5 кошек
-__n('%s cat', 6); // --> 6 кошек
-__n('%s cat', 21); // --> 21 кошка
+__n("%s cat", 0); // --> 0 кошек
+__n("%s cat", 1); // --> 1 кошка
+__n("%s cat", 2); // --> 2 кошки
+__n("%s cat", 5); // --> 5 кошек
+__n("%s cat", 6); // --> 6 кошек
+__n("%s cat", 21); // --> 21 кошка
 ```
 
-> __Note__ i18n.__n() will add a blueprint ("one, other" or "one, few, other" for example) for each locale to your json on updateFiles in a future version.
+> **Note** i18n.\_\_n() will add a blueprint ("one, other" or "one, few, other" for example) for each locale to your json on updateFiles in a future version.
 
-### i18n.__mf()
+### i18n.\_\_mf()
 
 Supports the advanced MessageFormat as provided by excellent [messageformat module](https://www.npmjs.com/package/messageformat). You should definetly head over to [messageformat.github.io](https://messageformat.github.io) for a guide to MessageFormat. i18n takes care of `new MessageFormat('en').compile(msg);` with the current `msg` loaded from it's json files and cache that complied fn in memory. So in short you might use it similar to `__()` plus extra object to accomplish MessageFormat's formatting. Ok, some examples:
 
 ```js
 // assume res is set to german
-res.setLocale('de');
+res.setLocale("de");
 
 // start simple
-res.__mf('Hello'); // --> Hallo
+res.__mf("Hello"); // --> Hallo
 
 // can replace too
-res.__mf('Hello {name}', { name: 'Marcus' }) // --> Hallo Marcus
+res.__mf("Hello {name}", { name: "Marcus" }); // --> Hallo Marcus
 
 // and combines with sprintf
-res.__mf('Hello {name}, how was your %s?', 'test', { name: 'Marcus' }) // --> Hallo Marcus, wie war dein test?
+res.__mf("Hello {name}, how was your %s?", "test", { name: "Marcus" }); // --> Hallo Marcus, wie war dein test?
 
 // now check out a plural rule
-res.__mf('{N, plural, one{# cat} few{# cats} many{# cats} others{# cats}}', {N: 1})
+res.__mf("{N, plural, one{# cat} few{# cats} many{# cats} others{# cats}}", {
+  N: 1,
+});
 
 // results for "1" in   (all use "one")
 // en --> 1 cat
@@ -521,18 +541,18 @@ Take a look at [Mozilla](https://developer.mozilla.org/en-US/docs/Mozilla/Locali
 
 But MessageFormat can handle more! You get ability to process:
 
-* Simple Variable Replacement (similar to mustache placeholders)
-* SelectFormat (ie. switch msg based on gender)
-* PluralFormat (see above and [ranges](#ranged-interval-support))
+- Simple Variable Replacement (similar to mustache placeholders)
+- SelectFormat (ie. switch msg based on gender)
+- PluralFormat (see above and [ranges](#ranged-interval-support))
 
 Combinations of those give superpower, but should get tested well (contribute your use case, please!) on integration.
 
-### i18n.__l()
+### i18n.\_\_l()
 
 Returns a list of translations for a given phrase in each language.
 
 ```js
-i18n.__l('Hello'); // --> [ 'Hallo', 'Hello' ]
+i18n.__l("Hello"); // --> [ 'Hallo', 'Hello' ]
 ```
 
 This will be usefull when setting up localized routes for example (kudos to @xpepermint, #150):
@@ -541,39 +561,39 @@ This will be usefull when setting up localized routes for example (kudos to @xpe
 // this will match routes
 // EN --> /:locale/products/:id?
 // ES --> /:locale/productos/:id?
-app.get( __l('/:locale/products/:id?'), function (req, res) {
-    // guess what you might use req.params.locale for?
+app.get(__l("/:locale/products/:id?"), function (req, res) {
+  // guess what you might use req.params.locale for?
 });
 ```
 
-> i18n.__ln() to get plurals will come up in another release...
+> i18n.\_\_ln() to get plurals will come up in another release...
 
-### i18n.__h()
+### i18n.\_\_h()
 
 Returns a hashed list of translations for a given phrase in each language.
 
 ```js
-i18n.__h('Hello'); // --> [ { de: 'Hallo' }, { en: 'Hello' } ]
+i18n.__h("Hello"); // --> [ { de: 'Hallo' }, { en: 'Hello' } ]
 ```
 
-> i18n.__hn() to get plurals will come up in another release...
+> i18n.\_\_hn() to get plurals will come up in another release...
 
 ### i18n.setLocale()
 
 Setting the current locale (ie.: `en`) globally or in current scope.
 
 ```js
-setLocale('de');
-setLocale(req, 'de');
-req.setLocale('de');
+setLocale("de");
+setLocale(req, "de");
+req.setLocale("de");
 ```
 
 Use setLocale to change any initial locale that was set in `i18n.init()`. You get more control on how when and which objects get setup with a given locale. Locale values are inherited within the given schema like in `i18n.init()` Let's see some examples:
 
 ```js
-i18n.setLocale(req, 'ar'); // --> req: مرحبا res: مرحبا res.locals: مرحبا
-i18n.setLocale(res, 'ar'); // --> req: Hallo res: مرحبا res.locals: مرحبا
-i18n.setLocale(res.locals, 'ar'); // --> req: Hallo res: Hallo res.locals: مرحبا
+i18n.setLocale(req, "ar"); // --> req: مرحبا res: مرحبا res.locals: مرحبا
+i18n.setLocale(res, "ar"); // --> req: Hallo res: مرحبا res.locals: مرحبا
+i18n.setLocale(res.locals, "ar"); // --> req: Hallo res: Hallo res.locals: مرحبا
 ```
 
 You'll get even more control when passing an array of objects:
@@ -585,7 +605,7 @@ i18n.setLocale([req, res.locals], req.params.lang); // --> req: مرحبا res: 
 or disable inheritance by passing true as third parameter:
 
 ```js
-i18n.setLocale(res, 'ar', true); // --> req: Hallo res: مرحبا res.locals: Hallo
+i18n.setLocale(res, "ar", true); // --> req: Hallo res: مرحبا res.locals: Hallo
 ```
 
 ### i18n.getLocale()
@@ -612,13 +632,13 @@ Returns a whole catalog optionally based on current scope and locale.
 
 ```js
 getCatalog(); // returns catalog for all locales
-getCatalog('de'); // returns just for 'de'
+getCatalog("de"); // returns just for 'de'
 
 getCatalog(req); // returns catalog for all locales
-getCatalog(req, 'de'); // returns just for 'de'
+getCatalog(req, "de"); // returns just for 'de'
 
 req.getCatalog(); // returns catalog for all locales
-req.getCatalog('de'); // returns just for 'de'
+req.getCatalog("de"); // returns just for 'de'
 ```
 
 ## Attaching helpers for template engines
@@ -665,21 +685,25 @@ As inspired by gettext there is currently support for sprintf-style expressions.
 ### sprintf support
 
 ```js
-var greeting = __('Hello %s, how are you today?', 'Marcus');
+var greeting = __("Hello %s, how are you today?", "Marcus");
 ```
 
-this puts *Hello Marcus, how are you today?*. You might add endless arguments and even nest it.
+this puts _Hello Marcus, how are you today?_. You might add endless arguments and even nest it.
 
 ```js
-var greeting = __('Hello %s, how are you today? How was your %s.', 'Marcus', __('weekend'));
+var greeting = __(
+  "Hello %s, how are you today? How was your %s.",
+  "Marcus",
+  __("weekend")
+);
 ```
 
-which puts *Hello Marcus, how are you today? How was your weekend.*
+which puts _Hello Marcus, how are you today? How was your weekend._
 
 You might need to have repeated references to the same argument, which can be done with sprintf.
 
 ```js
-var example = __('%1$s, %1$s, %1$s', 'repeat');
+var example = __("%1$s, %1$s, %1$s", "repeat");
 ```
 
 which puts
@@ -688,10 +712,10 @@ which puts
 repeat, repeat, repeat
 ```
 
-In some cases the argument order will need to be switched for different locales.  The arguments can be strings, floats, numbers, etc.
+In some cases the argument order will need to be switched for different locales. The arguments can be strings, floats, numbers, etc.
 
 ```js
-var example = __('%2$d then %1$s then %3$.2f', 'First', 2, 333.333);
+var example = __("%2$d then %1$s then %3$.2f", "First", 2, 333.333);
 ```
 
 which puts
@@ -705,49 +729,65 @@ which puts
 You may also use [mustache](http://mustache.github.io/) syntax for your message strings. To pass named parameters to your message, just provide an object as the last parameter. You can still pass unnamed parameters by adding additional arguments.
 
 ```js
-var greeting = __('Hello {{name}}, how are you today?', { name: 'Marcus' });
+var greeting = __("Hello {{name}}, how are you today?", { name: "Marcus" });
 ```
 
-this puts *Hello Marcus, how are you today?*. You might also combine it with sprintf arguments...
+this puts _Hello Marcus, how are you today?_. You might also combine it with sprintf arguments...
 
 ```js
-var greeting = __('Hello {{name}}, how was your %s.', __('weekend'), { name: 'Marcus' });
+var greeting = __("Hello {{name}}, how was your %s.", __("weekend"), {
+  name: "Marcus",
+});
 ```
 
 and even nest it...
 
 ```js
-var greeting = __( __('Hello {{name}}, how was your %s?', { name: 'Marcus' }), __('weekend') );
+var greeting = __(
+  __("Hello {{name}}, how was your %s?", { name: "Marcus" }),
+  __("weekend")
+);
 ```
 
-which both put *Hello Marcus, how was your weekend.*
+which both put _Hello Marcus, how was your weekend._
 
 ### basic plural support
 
 two different plural forms are supported as response to `count`:
 
 ```js
-var singular = __n('%s cat', '%s cats', 1);
-var plural = __n('%s cat', '%s cats', 3);
+var singular = __n("%s cat", "%s cats", 1);
+var plural = __n("%s cat", "%s cats", 3);
 ```
 
 this puts **1 cat** or **3 cats**
 and again these could get nested:
 
 ```js
-var singular = __n('There is one monkey in the %%s', 'There are %d monkeys in the %%s', 1, 'tree');
-var plural = __n('There is one monkey in the %%s', 'There are %d monkeys in the %%s', 3, 'tree');
+var singular = __n(
+  "There is one monkey in the %%s",
+  "There are %d monkeys in the %%s",
+  1,
+  "tree"
+);
+var plural = __n(
+  "There is one monkey in the %%s",
+  "There are %d monkeys in the %%s",
+  3,
+  "tree"
+);
 ```
-putting *There is one monkey in the tree* or *There are 3 monkeys in the tree*. Passing all 3 parameters would write a `one` and `other` to your json. For reading you might just use 2 parameters, too:
+
+putting _There is one monkey in the tree_ or _There are 3 monkeys in the tree_. Passing all 3 parameters would write a `one` and `other` to your json. For reading you might just use 2 parameters, too:
 
 ```js
-__n('%s cat', 1) // --> 1 Katze
-__n('%s cat', 3) // --> 3 Katzen
+__n("%s cat", 1); // --> 1 Katze
+__n("%s cat", 3); // --> 3 Katzen
 ```
 
 ### ranged interval support
 
-use mathematical intervals to declare any own plural rules based on [ISO 31-11](https://en.wikipedia.org/wiki/Interval_(mathematics)#Notations_for_intervals) notation. Let's assume the following json snippet:
+use mathematical intervals to declare any own plural rules based on [ISO 31-11](<https://en.wikipedia.org/wiki/Interval_(mathematics)#Notations_for_intervals>) notation. Let's assume the following json snippet:
 
 ```json
 "dogs": {
@@ -759,20 +799,20 @@ use mathematical intervals to declare any own plural rules based on [ISO 31-11](
 this will result in
 
 ```js
-__n('dogs', 0) // --> no dog
-__n('dogs', 1) // --> one dog
-__n('dogs', 2) // --> some dogs
-__n('dogs', 10) // --> many dogs
-__n('dogs', 25) // --> dozens of dogs
-__n('dogs', 42) // --> a horde of 42 dogs
-__n('dogs', 199) // --> too many dogs
+__n("dogs", 0); // --> no dog
+__n("dogs", 1); // --> one dog
+__n("dogs", 2); // --> some dogs
+__n("dogs", 10); // --> many dogs
+__n("dogs", 25); // --> dozens of dogs
+__n("dogs", 42); // --> a horde of 42 dogs
+__n("dogs", 199); // --> too many dogs
 ```
 
 The rules are parsed in sequenced order, so the first match will skip any extra rules. Example:
 
 ```json
 {
-    "dogs":"[0]no dog|[1]one dog|[,10[ less than ten dogs|[,20[ less than 20 dogs|too many dogs"
+  "dogs": "[0]no dog|[1]one dog|[,10[ less than ten dogs|[,20[ less than 20 dogs|too many dogs"
 }
 ```
 
@@ -780,24 +820,24 @@ results in
 
 ```js
 // interval matched by number
-__n('dogs', 0) // --> no dog
-__n('dogs', 1) // --> one dog
-__n('dogs', 2) // --> less than ten dogs
-__n('dogs', 9) // --> less than ten dogs
-__n('dogs', 10) // --> less than 20 dogs
-__n('dogs', 19) // --> less than 20 dogs
-__n('dogs', 20) // --> too many dogs
-__n('dogs', 199) // --> too many dogs
+__n("dogs", 0); // --> no dog
+__n("dogs", 1); // --> one dog
+__n("dogs", 2); // --> less than ten dogs
+__n("dogs", 9); // --> less than ten dogs
+__n("dogs", 10); // --> less than 20 dogs
+__n("dogs", 19); // --> less than 20 dogs
+__n("dogs", 20); // --> too many dogs
+__n("dogs", 199); // --> too many dogs
 
 // no interval returned, but found a catchall
-__('dogs') // --> too many dogs
+__("dogs"); // --> too many dogs
 ```
 
 See [en.json example](https://github.com/mashpie/i18n-node/blob/master/locales/en.json) inside `/locales` for some inspiration on use cases. Each phrase might get decorated further with mustache and sprintf expressions:
 
 ```json
 {
-    "example":"[0] %s is zero rule for {{me}}|[2,5] %s is between two and five for {{me}}|and a catchall rule for {{me}} to get my number %s"
+  "example": "[0] %s is zero rule for {{me}}|[2,5] %s is between two and five for {{me}}|and a catchall rule for {{me}} to get my number %s"
 }
 ```
 
@@ -805,28 +845,28 @@ will put (as taken from tests):
 
 ```js
 // will always use a found catchall
-__('example', {me: 'marcus'}) // --> and a catchall rule for marcus to get my number %s
-__('example', ['one'], {me: 'marcus'}) // --> and a catchall rule for marcus to get my number one
+__("example", { me: "marcus" }); // --> and a catchall rule for marcus to get my number %s
+__("example", ["one"], { me: "marcus" }); // --> and a catchall rule for marcus to get my number one
 
 // will search a matching interval or fallback to catchall
-__n('example', 1, {me: 'marcus'}) // --> and a catchall rule for marcus to get my number 1
-__n('example', 2, {me: 'marcus'}) // --> 2 is between two and five for marcus
-__n('example', 5, {me: 'marcus'}) // --> 5 is between two and five for marcus
-__n('example', 3, {me: 'marcus'}) // --> 3 is between two and five for marcus
-__n('example', 6, {me: 'marcus'}) // --> and a catchall rule for marcus to get my number 6
+__n("example", 1, { me: "marcus" }); // --> and a catchall rule for marcus to get my number 1
+__n("example", 2, { me: "marcus" }); // --> 2 is between two and five for marcus
+__n("example", 5, { me: "marcus" }); // --> 5 is between two and five for marcus
+__n("example", 3, { me: "marcus" }); // --> 3 is between two and five for marcus
+__n("example", 6, { me: "marcus" }); // --> and a catchall rule for marcus to get my number 6
 ```
-> __Notice__: the "example" object in your json doesn't use any "one", "other" subnodes although you _could_ use and even combine them. Currently "one" referres to the value of exactly 1 while "other" referres to every other value (think of 0, -10, null, false)
 
+> **Notice**: the "example" object in your json doesn't use any "one", "other" subnodes although you _could_ use and even combine them. Currently "one" referres to the value of exactly 1 while "other" referres to every other value (think of 0, -10, null, false)
 
 ### variable support
 
 you might even use dynamic variables as they get interpreted on the fly. Better make sure no user input finds it's way to that point as they all get added to the `en.js` file if not yet existing.
 
 ```js
-var greetings = ['Hi', 'Hello', 'Howdy'];
-for (var i=0; i < greetings.length; i++) {
-    console.log( __(greetings[i]) );
-};
+var greetings = ["Hi", "Hello", "Howdy"];
+for (var i = 0; i < greetings.length; i++) {
+  console.log(__(greetings[i]));
+}
 ```
 
 which puts
@@ -889,8 +929,8 @@ By default, when using object notation, the provided string literal will be inse
 In case you would prefer to have a default string automatically inserted and returned, you can provide that default string by appending it to your object literal, delimited by a `:`. For example:
 
 ```js
-__("greeting.formal:Hello")
-__("greeting.placeholder.informal:Hi %s")
+__("greeting.formal:Hello");
+__("greeting.placeholder.informal:Hi %s");
 ```
 
 ## Storage
@@ -903,25 +943,25 @@ the above will automatically generate a `en.json` by default inside `./locales/`
 
 ```json
 {
-    "Hello": "Hello",
-    "Hello %s, how are you today?": "Hello %s, how are you today?",
-    "weekend": "weekend",
-    "Hello %s, how are you today? How was your %s.": "Hello %s, how are you today? How was your %s.",
-    "Hi": "Hi",
-    "Howdy": "Howdy",
-    "%s cat": {
-        "one": "%s cat",
-        "other": "%s cats"
-    },
-    "There is one monkey in the %%s": {
-        "one": "There is one monkey in the %%s",
-        "other": "There are %d monkeys in the %%s"
-    },
-    "tree": "tree",
-    "%s dog": {
-        "one": "one dog",
-        "other": "[0] no dog|[2,5] some dogs|[6,11] many dogs|[12,36] dozens of dogs|a horde of %s dogs"
-    }
+  "Hello": "Hello",
+  "Hello %s, how are you today?": "Hello %s, how are you today?",
+  "weekend": "weekend",
+  "Hello %s, how are you today? How was your %s.": "Hello %s, how are you today? How was your %s.",
+  "Hi": "Hi",
+  "Howdy": "Howdy",
+  "%s cat": {
+    "one": "%s cat",
+    "other": "%s cats"
+  },
+  "There is one monkey in the %%s": {
+    "one": "There is one monkey in the %%s",
+    "other": "There are %d monkeys in the %%s"
+  },
+  "tree": "tree",
+  "%s dog": {
+    "one": "one dog",
+    "other": "[0] no dog|[2,5] some dogs|[6,11] many dogs|[12,36] dozens of dogs|a horde of %s dogs"
+  }
 }
 ```
 
@@ -929,25 +969,25 @@ that file can be edited or just uploaded to [webtranslateit](http://docs.webtran
 
 ```json
 {
-    "Hello": "Hallo",
-    "Hello %s, how are you today?": "Hallo %s, wie geht es dir heute?",
-    "weekend": "Wochenende",
-    "Hello %s, how are you today? How was your %s.": "Hallo %s, wie geht es dir heute? Wie war dein %s.",
-    "Hi": "Hi",
-    "Howdy": "Hallöchen",
-    "%s cat": {
-        "one": "%s Katze",
-        "other": "%s Katzen"
-    },
-    "There is one monkey in the %%s": {
-        "one": "Im %%s sitzt ein Affe",
-        "other": "Im %%s sitzen %d Affen"
-    },
-    "tree": "Baum",
-    "%s dog": {
-        "one": "Ein Hund",
-        "other": "[0] Kein Hund|[2,5] Ein paar Hunde|[6,11] Viele Hunde|[12,36] Dutzende Hunde|Ein Rudel von %s Hunden"
-    }
+  "Hello": "Hallo",
+  "Hello %s, how are you today?": "Hallo %s, wie geht es dir heute?",
+  "weekend": "Wochenende",
+  "Hello %s, how are you today? How was your %s.": "Hallo %s, wie geht es dir heute? Wie war dein %s.",
+  "Hi": "Hi",
+  "Howdy": "Hallöchen",
+  "%s cat": {
+    "one": "%s Katze",
+    "other": "%s Katzen"
+  },
+  "There is one monkey in the %%s": {
+    "one": "Im %%s sitzt ein Affe",
+    "other": "Im %%s sitzen %d Affen"
+  },
+  "tree": "Baum",
+  "%s dog": {
+    "one": "Ein Hund",
+    "other": "[0] Kein Hund|[2,5] Ein paar Hunde|[6,11] Viele Hunde|[12,36] Dutzende Hunde|Ein Rudel von %s Hunden"
+  }
 }
 ```
 
@@ -961,9 +1001,9 @@ $ DEBUG=i18n:* node app.js
 
 i18n exposes three log-levels:
 
-* i18n:debug
-* i18n:warn
-* i18n:error
+- i18n:debug
+- i18n:warn
+- i18n:error
 
 if you only want to get errors and warnings reported start your node server like so:
 
@@ -971,7 +1011,7 @@ if you only want to get errors and warnings reported start your node server like
 $ DEBUG=i18n:warn,i18n:error node app.js
 ```
 
-Combine those settings with you existing application if any of you other modules or libs also uses __debug__
+Combine those settings with you existing application if any of you other modules or libs also uses **debug**
 
 ### Using custom logger
 
@@ -1001,12 +1041,12 @@ i18n.configure({
 
 ## Roadmap
 
-* add a storage adapter (to support .yaml, .js, memory)
-* improved fallbacks
-* refactor dot notation (ie. configurable delimiters)
-* refactor to ES6
-* refactor to standard + prettier
-* move docs + examples to github pages
+- add a storage adapter (to support .yaml, .js, memory)
+- improved fallbacks
+- refactor dot notation (ie. configurable delimiters)
+- refactor to ES6
+- refactor to standard + prettier
+- move docs + examples to github pages
 
 ## Changelog
 
@@ -1014,18 +1054,13 @@ For current release notes see [GitHub Release Notes](https://github.com/mashpie/
 
 [npm-image]: https://badge.fury.io/js/i18n.svg
 [npm-url]: https://www.npmjs.com/package/i18n
-
 [travis-image]: https://travis-ci.org/mashpie/i18n-node.svg?branch=master
 [travis-url]: https://travis-ci.org/mashpie/i18n-node
-
 [coveralls-image]: https://coveralls.io/repos/github/mashpie/i18n-node/badge.svg?branch=master
 [coveralls-url]: https://coveralls.io/github/mashpie/i18n-node?branch=master
-
 [snyk-image]: https://snyk.io/test/npm/i18n/badge.svg
 [snyk-url]: https://snyk.io/test/npm/i18n
-
 [fossa-image]: https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmashpie%2Fi18n-node.svg?type=shield
 [fossa-url]: https://app.fossa.com/projects/git%2Bgithub.com%2Fmashpie%2Fi18n-node?ref=badge_shield
-
 [greenkeeper-image]: https://badges.greenkeeper.io/mashpie/i18n-node.svg
 [greenkeeper-url]: https://greenkeeper.io/
