@@ -33,7 +33,7 @@ npm test
 ```js
 // load modules
 var express = require("express"),
-  i18n = require("@indicado/i18n-node");
+  i18n = require("@indicado/i18n");
 ```
 
 ## Configure
